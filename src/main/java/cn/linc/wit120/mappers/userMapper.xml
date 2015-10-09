@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-->namespace:必须与接口的全类名一致 <-->
+<mapper namespace="cn.linc.wit120.mappers.UserMapper">
+       <resultMap type="User" id="userResult">
+              <result column="user_id" property="id"/>
+              <result column="user_name" property="name"/>
+              <result column="user_birthday" property="birthday"/>
+              <result column="user_salary" property="salary"/>
+       </resultMap>
+
+       <!-- 取得插入数据后的id -->
+       <insert id="save" parameterType="User">
+              insert into s_user(user_name,user_birthday,user_salary)
+              values(#{name},#{birthday},#{salary})
+       </insert>
+
+
+</mapper>

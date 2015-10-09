@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+
+ <mvc:annotation-driven></mvc:annotation-driven>
+<context:component-scan base-package="cn.linc.wit120"></context:component-scan>
+
+       <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+              <property name="prefix" value="/WEB-INF/views/" />
+              <property name="suffix" value=".jsp" />
+       </bean>
+       <!-- 导入属性配置文件 -->
+       <context:property-placeholder location="/WEB-INF/config/db.properties" />
+       <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+              <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+              <property name="url" value="${jdbc.url}" />
+
+       </bean>
+<!--
+        mapperLocations：它表示我们的Mapper文件存放的位置，当我们的Mapper文件跟对应的Mapper接口处于同一位置的时候可以不用指定该属性的值。
+        configLocation：用于指定Mybatis的配置文件位置。如果指定了该属性，那么会以该配置文件的内容作为配置信息构建对应的SqlSessionFactoryBuilder，但是后续属性指定的内容会覆盖该配置文件里面指定的对应内容。
+        typeAliasesPackage：它一般对应我们的实体类所在的包，这个时候会自动取对应包中不包括包名的简单类名作为包括包名的别名。多个package之间可以用逗号或者分号等来进行分隔。
+        typeAliases：数组类型，用来指定别名的。指定了这个属性后，Mybatis会把这个类型的短名称作为这个类型的别名，前提是该类上没有标注@Alias注解，否则将使用该注解对应的值作为此种类型的别名。
+-->
+       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+              <property name="dataSource" ref="dataSource" />
+              <property name="typeAliasesPackage" value="cn.linc.wit120.model"/>
+              <property name="mapperLocations" value="classpath*:cn/linc/wit120/mappers/*.xml" />
+       </bean>
+       <!-->
+       mybatis自动扫描加载Sql映射文件/接口：MapperScannerConfigurer
+       basePackage:指定sql映射文件/接口所在的包（自动扫描）
+       <-->
+       <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+              <property name="basePackage" value="cn.linc.wit120.mappers" />
+
+
+       </bean>
+       <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+              <constructor-arg index="0" ref="sqlSessionFactory" />
+       </bean>
+       <bean id = "txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+              <property name="dataSource" ref = "dataSource"></property>
+       </bean>
+       <tx:annotation-driven transaction-manager = "txManager" ></tx:annotation-driven>
+
+
+</beans>
